@@ -1,32 +1,27 @@
 package request
 
 import (
-	"encoding/json"
+	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 )
 
-type ParsedBodyStruct struct {
-	Name string `json:"name"`
-	Age  int    `json:"age"`
+type Request struct {
+	Method string
+	Body   io.ReadCloser
 }
 
-func ParsedBody(r *http.Request) ParsedBodyStruct {
-	var parsedBody ParsedBodyStruct
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-
-	}
-	fmt.Printf("Body %s", body)
-	err = json.Unmarshal(body, &parsedBody)
-	return parsedBody
+func Init(r *http.Request) *Request {
+	method := r.Method
+	body := r.Body
+	return &Request{Method: method, Body: body}
 }
 
-func ToJSON(body ParsedBodyStruct) []byte {
-	output, err := json.Marshal(body)
-	if err != nil {
-		return nil
+func (req *Request) CheckMethod(method string) error {
+	errorMessage := fmt.Sprintf("Method %s Not Allowed", req.Method)
+	if req.Method != method {
+		return errors.New(errorMessage)
 	}
-	return output
+	return nil
 }
