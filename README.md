@@ -1,3 +1,3 @@
 # go-structs
 
-#Remember current location
+#Remember current location of user from browser
